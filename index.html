@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Redux Report</title>
+    <script src="https://unpkg.com/redux@latest/dist/redux.min.js"></script>
+  </head>
+  <body>
+    <div>
+      <h3>Wellcome to Redux</h3>
+      <p>----------------------------------------</p>
+    </div>
+    <div>
+      <p>List of People to Add</p>
+      <div id="availablelist"></div>
+      <p>Friends</p>
+      <div id="friendlist"></div>
+    </div>
+    <script>
+      var listToAdd = [
+        { id: 0, name: 'William' },
+        { id: 1, name: 'Joshua' },
+        { id: 2, name: 'Kevin' },
+        { id: 3, name: 'James' },
+        { id: 4, name: 'Edgar' },
+        { id: 5, name: 'Johnson' },
+        { id: 6, name: 'Norman' },
+        { id: 7, name: 'Louise' },
+        { id: 8, name: 'Steven' },
+      ];
+
+      function PeopleReducer(state = { people: listToAdd }, action) {
+        switch (action.type) {
+          case 'ADD_AVAILABLE_PERSON':
+              var newState = state.people.concat([action.person]);
+            return { people: newState };
+          case 'REMOVE_AVAILABLE_PERSON':
+            var personToRemove = action.person;
+            var newState = Object.assign({}, state);
+            function removeFriend(person, i) {
+              if (person.id == personToRemove.id) newState.people.splice(i, 1);
+            };
+            newState.people.map(removeFriend);
+            return newState;
+          default:
+            return state;
+        }
+      };
+
+      // Reducers.
+
+      function FriendsReducer(state = { friends: [] }, action) {
+        switch (action.type) {
+          case 'ADD_FRIEND':
+              var newState = state.friends.concat([action.friend]);
+            return { friends: newState };
+          case 'REMOVE_FRIEND':
+            var friendToRemove = action.friend;
+            var newState = Object.assign({}, state);
+            function removeFriend(friend, i) {
+              if (friend.id == friendToRemove.id) newState.friends.splice(i, 1);
+            };
+            newState.friends.map(removeFriend);
+            return newState;
+          default:
+            return state;
+        }
+      };
+
+      var reducers = Redux.combineReducers({
+        peopleState: PeopleReducer,
+        friendState: FriendsReducer
+      });
+
+      var store = Redux.createStore(reducers);
+      var availableListEl = document.getElementById('availablelist');
+      var friendsListEl = document.getElementById('friendlist');
+
+      function render() {
+        var friends = store.getState().friendState.friends;
+        var people = store.getState().peopleState.people;
+        function renderPerson(person) {
+          return `<li><a href="#" id=${person.id}>${person.name}</a></li>`;
+        };
+        availablelist.innerHTML = `<ul>${people.map(renderPerson)}</ul>`;
+        friendsListEl.innerHTML = `<ul>${friends.map(renderPerson)}</ul>`;
+      };
+
+      render()
+      store.subscribe(render);
+
+      // Actions creators.
+
+      function AddToFriendListAction(e) {
+        var data = e.target;
+        if (!data.text || !data.id) return;
+        store.dispatch({
+          type: 'ADD_FRIEND',
+          friend: { name: data.text, id: data.id }
+        });
+        store.dispatch({
+          type: 'REMOVE_AVAILABLE_PERSON',
+          person: { name: data.text, id: data.id }
+        });
+      };
+
+      function RemoveFromFriendListAction(e) {
+        var data = e.target;
+        if (!data.text || !data.id) return;
+        store.dispatch({
+          type: 'REMOVE_FRIEND',
+          friend: { name: data.text, id: data.id }
+        });
+        store.dispatch({
+          type: 'ADD_AVAILABLE_PERSON',
+          person: { name: data.text, id: data.id }
+        });
+      };
+
+      // Actions under friends.
+
+      document.getElementById('availablelist')
+        .addEventListener('click', function (e) {
+          AddToFriendListAction(e);
+        });
+      document.getElementById('friendlist')
+        .addEventListener('click', function (e) {
+          RemoveFromFriendListAction(e);
+      });
+    </script>
+  </body>
+</html>
