@@ -2,19 +2,31 @@
 <html>
   <head>
     <title>Redux Report</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+      crossorigin="anonymous"
+    >
     <script src="https://unpkg.com/redux@latest/dist/redux.min.js"></script>
   </head>
   <body>
+    <div class="container col-md-10 col-md-offset-1">
+      <div class="jumbotron">
+        <h1>Friend List</h1>
+        <div class="row">
+          <div class="col-md-5 pull-left">
+            <p>List of People to Add</p>
+            <div id="availablelist"></div>
+          </div>
+          <div class="col-md-5 pull-right">
+            <p>Friends</p>
+            <div id="friendlist"></div>
+          </div>
+        </div>
+      </div>
     <div>
-      <h3>Wellcome to Redux</h3>
-      <p>----------------------------------------</p>
-    </div>
-    <div>
-      <p>List of People to Add</p>
-      <div id="availablelist"></div>
-      <p>Friends</p>
-      <div id="friendlist"></div>
-    </div>
+  </div>
     <script>
       var listToAdd = [
         { id: 0, name: 'William' },
@@ -79,10 +91,10 @@
         var friends = store.getState().friendState.friends;
         var people = store.getState().peopleState.people;
         function renderPerson(person) {
-          return `<li><a href="#" id=${person.id}>${person.name}</a></li>`;
+          return `<a href="#" id=${person.id} class="btn btn-info">${person.name}</a>`;
         };
-        availablelist.innerHTML = `<ul>${people.map(renderPerson)}</ul>`;
-        friendsListEl.innerHTML = `<ul>${friends.map(renderPerson)}</ul>`;
+        availablelist.innerHTML = `<p>${people.map(renderPerson).join("\r\n")}</p>`;
+        friendsListEl.innerHTML = `<p>${friends.map(renderPerson).join("\r\n")}</p>`;
       };
 
       render()
